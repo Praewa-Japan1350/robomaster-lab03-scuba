@@ -1,7 +1,29 @@
+# Virtual Environment
+.venv/
 venv/
+
+# IDE
 .vscode/
+.idea/
+
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Data files (ไฟล์ขนาดใหญ่)
+data/raw/**/*.csv
+data/processed/**/*.csv
+
+# Plots output
+analysis/plots/*.png
+analysis/plots/*.pdf
+
+# Lib & Scripts (จาก pip install ที่ root D:\)
+Lib/
+Scripts/
