@@ -1,61 +1,61 @@
-# src/chassis.py
-# คลาสควบคุมล้อ Mecanum (เดินหน้า, ถอยหลัง, สไลด์ข้าง)
-
-
 class ChassisController:
-    """
-    คลาสสำหรับควบคุมล้อ Mecanum ของ RoboMaster EP
-    รองรับการเคลื่อนที่: เดินหน้า, ถอยหลัง, สไลด์ซ้าย-ขวา, หมุนตัว
-    """
 
-    def __init__(self, ep_robot, config):
-        """
-        Parameters
-        ----------
-        ep_robot : robomaster.robot.Robot
-            instance ของหุ่นยนต์ที่เชื่อมต่อแล้ว
-        config : dict
-            Dictionary ตั้งค่าจาก settings.yaml
-        """
+    def __init__(self, ep_robot):
+        # Bind the chassis module from the main robot instance
         self.chassis = ep_robot.chassis
-        chassis_cfg = config["robot_params"]["chassis"]
-        self.default_speed_x = chassis_cfg["default_speed_x"]
-        self.default_speed_y = chassis_cfg["default_speed_y"]
-        self.max_speed_x = chassis_cfg["max_speed_x"]
-        print(f"[Chassis] Initialized | speed_x={self.default_speed_x}, speed_y={self.default_speed_y}")
 
-    def move_forward(self, distance=0.5, speed=None):
-        """เดินหน้าตามระยะที่กำหนด (เมตร)"""
-        spd = speed if speed else self.default_speed_x
-        spd = min(spd, self.max_speed_x)  # จำกัดความเร็วสูงสุด
-        print(f"[Chassis] Moving forward {distance}m at {spd} m/s")
-        self.chassis.move(x=distance, y=0, z=0, xy_speed=spd).wait_for_completed()
+    # Move the robot forward by a specified distance in meters.
+    def move_forward(self, speed, distance, wait=True):
+        print(f"[Chassis] Moving forward: {distance}m at {speed} m/s")
+        # Positive x moves forward along the longitudinal axis
+        action = self.chassis.move(x=distance, y=0, z=0, xy_speed=speed)
+        if wait:
+            action.wait_for_completed()  # Block execution until movement finishes
+        return action
 
-    def move_backward(self, distance=0.5, speed=None):
-        """ถอยหลังตามระยะที่กำหนด (เมตร)"""
-        spd = speed if speed else self.default_speed_x
-        spd = min(spd, self.max_speed_x)
-        print(f"[Chassis] Moving backward {distance}m at {spd} m/s")
-        self.chassis.move(x=-distance, y=0, z=0, xy_speed=spd).wait_for_completed()
+    # Move the robot backward by a specified distance in meters.
+    def move_backward(self, speed, distance, wait=True):
+        print(f"[Chassis] Moving backward: {distance}m at {speed} m/s")
+        # Negative x moves backward along the longitudinal axis
+        action = self.chassis.move(x=-distance, y=0, z=0, xy_speed=speed)
+        if wait:
+            action.wait_for_completed()
+        return action
 
-    def slide_left(self, distance=0.5, speed=None):
-        """สไลด์ซ้ายตามระยะที่กำหนด (เมตร)"""
-        spd = speed if speed else self.default_speed_y
-        print(f"[Chassis] Sliding left {distance}m at {spd} m/s")
-        self.chassis.move(x=0, y=-distance, z=0, xy_speed=spd).wait_for_completed()
+    # Slide (strafe) the robot to the left by a specified distance in meters.
+    def slide_left(self, speed, distance, wait=True):
+        print(f"[Chassis] Sliding left: {distance}m at {speed} m/s")
+        # Negative y strafes left along the lateral axis
+        action = self.chassis.move(x=0, y=-distance, z=0, xy_speed=speed)
+        if wait:
+            action.wait_for_completed()
+        return action
 
-    def slide_right(self, distance=0.5, speed=None):
-        """สไลด์ขวาตามระยะที่กำหนด (เมตร)"""
-        spd = speed if speed else self.default_speed_y
-        print(f"[Chassis] Sliding right {distance}m at {spd} m/s")
-        self.chassis.move(x=0, y=distance, z=0, xy_speed=spd).wait_for_completed()
+    # Slide (strafe) the robot to the right by a specified distance in meters.
+    def slide_right(self, speed, distance, wait=True):
+        print(f"[Chassis] Sliding right: {distance}m at {speed} m/s")
+        # Positive y strafes right along the lateral axis
+        action = self.chassis.move(x=0, y=distance, z=0, xy_speed=speed)
+        if wait:
+            action.wait_for_completed()
+        return action
 
-    def rotate(self, angle=90, speed=50):
-        """หมุนตัวตามองศาที่กำหนด (บวก=ทวนเข็ม, ลบ=ตามเข็ม)"""
-        print(f"[Chassis] Rotating {angle}° at {speed} °/s")
-        self.chassis.move(x=0, y=0, z=angle, z_speed=speed).wait_for_completed()
+    # Turn the robot clockwise (right) by specified degrees.
+    def turn_right(self, speed, degrees=90, wait=True):
+        print(f"[Chassis] Turning right: {degrees} degrees at {speed} deg/s")
+        # Negative z rotates clockwise
+        action = self.chassis.move(x=0, y=0, z=-degrees, z_speed=speed)
+        if wait:
+            action.wait_for_completed()
+        return action
 
-    def stop(self):
-        """หยุดล้อทันที"""
-        print("[Chassis] Stopping...")
-        self.chassis.drive_speed(x=0, y=0, z=0)
+    # Turn the robot counter-clockwise (left) by specified degrees.
+    def turn_left(self, speed, degrees=90, wait=True):
+        print(f"[Chassis] Turning left: {degrees} degrees at {speed} deg/s")
+        # Positive z rotates counter-clockwise
+        action = self.chassis.move(x=0, y=0, z=degrees, z_speed=speed)
+        if wait:
+            action.wait_for_completed()
+        return action
+
+
