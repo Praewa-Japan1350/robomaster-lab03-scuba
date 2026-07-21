@@ -6,12 +6,19 @@ from typing import List, Optional
 
 # Handles real-time CSV data stream logging with immediate flush to disk
 class CSVLogger:
-    def __init__(self, output_dir: str = "data/raw/run1", prefix: str = "log"):
-        self.output_dir = output_dir
-        os.makedirs(self.output_dir, exist_ok=True)
+    def __init__(self, filepath: Optional[str] = None, output_dir: str = "data/raw/run1", prefix: str = "log"):
+        if filepath:
+            self.filepath = filepath
+            parent_dir = os.path.dirname(filepath)
+            if parent_dir:
+                os.makedirs(parent_dir, exist_ok=True)
+        else:
+            self.output_dir = output_dir
+            os.makedirs(self.output_dir, exist_ok=True)
 
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        self.filepath = os.path.join(self.output_dir, f"{prefix}_{timestamp}.csv")
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            self.filepath = os.path.join(self.output_dir, f"{prefix}_{timestamp}.csv")
+
         self.file: Optional[csv.writer] = None
         self._raw_file = None
 
