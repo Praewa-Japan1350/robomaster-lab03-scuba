@@ -13,6 +13,10 @@ robot_params:
     default_speed_x: 0.5       # ความเร็วเดินหน้า-ถอยหลังเริ่มต้น (m/s)
     default_speed_y: 0.5       # ความเร็วสไลด์ซ้าย-ขวาเริ่มต้น (m/s)
     max_speed_x: 1.5           # ขีดจำกัดความเร็วสูงสุดเพื่อความปลอดภัย
+    distance_trim: 1.0         # ตัวคูณปรับระยะทางเดินหน้า/ถอยหลัง (Trimming ratio)
+    turn_trim: 1.0             # ตัวคูณปรับมุมหมุน (Trimming ratio for turn degrees)
+    enable_heading_correction: true # เปิดใช้งาน IMU Yaw Lock เพื่อเดินตรง ไม่เอียง
+    yaw_kp: 0.05               # Proportional gain สำหรับแก้ yaw drift เมื่อเดินตรง
   gimbal:
     default_pitch_speed: 50    # ความเร็วในการก้ม-เงย (deg/s)
     default_yaw_speed: 100     # ความเร็วในการหมุนซ้าย-ขวา (deg/s)

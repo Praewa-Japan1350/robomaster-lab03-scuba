@@ -13,6 +13,7 @@ from robomaster import robot
 
 from src.config_loader import load_settings
 from src.logger import CSVLogger
+from src.chassis import ChassisController
 
 # Path navigation and sampling configuration
 TILE_SIZE      = 0.5     # Tile length in meters
@@ -138,7 +139,7 @@ def main():
     try:
         ep_robot.initialize(conn_type="ap")
         print("[Main] Connected! SN:", ep_robot.get_sn())
-        chassis = ep_robot.chassis
+        chassis_ctrl = ChassisController(ep_robot, config=config["robot_params"]["chassis"])
 
         recorder = TelemetryRecorder(ep_robot, logger)
 
@@ -162,6 +163,7 @@ def main():
         print("[Main] Starting 2x2 Square Path + Latency Measurement")
         print(f"[Main] Side distance = {TILES_PER_SIDE * TILE_SIZE:.2f} m")
         print(f"[Main] Speed = {speed} m/s | Turn Speed = {TURN_SPEED} deg/s")
+        print(f"[Main] Calibration Gains -> Dist scale: {chassis_ctrl.distance_trim}, Turn scale: {chassis_ctrl.turn_trim}")
         print("[Main] ════════════════════════════════════════\n")
 
         for side_idx, side_name in enumerate(cardinal_sides):
@@ -172,7 +174,7 @@ def main():
 
                 recorder.set_phase(label + "_move")
                 print(f"[Main]   ➜ Moving {MOVE_DIST} m forward...")
-                chassis.move(x=MOVE_DIST, y=0, z=0, xy_speed=speed).wait_for_completed()
+                chassis_ctrl.move_forward(speed=speed, distance=MOVE_DIST)
 
                 recorder.set_phase(label + "_stop")
                 print(f"[Main]   ■ Stopping for {STOP_TIME} s...")
@@ -181,7 +183,7 @@ def main():
             turn_label = f"s{side_idx+1}_{side_name}_turn_right"
             recorder.set_phase(turn_label)
             print("[Main]   ↻ Turning right 90°...")
-            chassis.move(x=0, y=0, z=TURN_DEG, z_speed=TURN_SPEED).wait_for_completed()
+            chassis_ctrl.turn_right(speed=TURN_SPEED, degrees=abs(TURN_DEG))
 
         recorder.set_phase("complete")
         print("\n[Main] ✓ Square path completed successfully!")
