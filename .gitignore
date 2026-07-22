@@ -17,7 +17,6 @@ __pycache__/
 Thumbs.db
 
 # Data files (ไฟล์ขนาดใหญ่)
-data/raw/**/*.csv
 data/processed/**/*.csv
 
 # Plots output
